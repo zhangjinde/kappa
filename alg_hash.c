@@ -1,5 +1,5 @@
 /* hash utility routines
-Copyright (C) 2014-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
 #include <stdio.h>

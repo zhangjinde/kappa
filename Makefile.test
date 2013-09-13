@@ -1,0 +1,28 @@
+# Makefile for test utility
+# Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+# This file is part of Kappa.
+
+LOGS = test.log
+CFLAGS += --std=c89 -g -Wall
+LDLIBS += -lpthread
+MEMORY = valgrind
+COVERAGE = gcav
+
+LIBS += ../xxx.o 
+OBJECTS += xxx.o 
+TESTS += xxx
+
+$(TESTS): $(OBJECTS) $(LIBS)
+	$(CC) $(CFLAGS) $@.c -o $@ $(OBJECTS) $(LIBS) $(LDLIBS)
+
+all: $(TESTS)
+
+test: all
+	@rm -f $(LOGS)
+	@(for test in $(TESTS); do \
+	  (./$$test >> $(LOGS) 2>&1;) \
+	done)
+
+clean:
+	rm -f $(OBJECTS)
+	rm -f $(TESTS) $(LOGS)

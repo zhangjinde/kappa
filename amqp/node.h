@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_NODE_H
-#define MQA_NODE_H
+#ifndef NODE_H
+#define NODE_H
 
 /* An AMQP node interface's structures and functions. */
 

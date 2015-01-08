@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_TERMINUS_H
-#define MQA_TERMINUS_H
+#ifndef TERMINUS_H
+#define TERMINUS_H
 
 /* An AMQP terminus interface's structures and functions. */
 

@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_SESSION_ERROR_H
-#define MQA_SESSION_ERROR_H
+#ifndef SESSION_ERROR_H
+#define SESSION_ERROR_H
 
 /* The AMQP Session Error interface's structures and functions. */
 

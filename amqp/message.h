@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_MESSAGE_H
-#define MQA_MESSAGE_H
+#ifndef MESSAGE_H
+#define MESSAGE_H
 
 /* An AMQP message interface's structures and functions. */
 

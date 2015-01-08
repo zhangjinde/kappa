@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_FIXED_HEADER_H
-#define MQA_FIXED_HEADER_H
+#ifndef FIXED_HEADER_H
+#define FIXED_HEADER_H
 
 /* An AMQP fixed header structures and functions. */
 

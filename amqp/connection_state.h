@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_CONNECTION_STATE_H
-#define MQA_CONNECTION_STATE_H
+#ifndef CONNECTION_STATE_H
+#define CONNECTION_STATE_H
 
 /* The AMQP Connection State enumeration. */
 enum connection_state {

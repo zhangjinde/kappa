@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_QUEUE_H
-#define MQA_QUEUE_H
+#ifndef QUEUE_H
+#define QUEUE_H
 
 /* An AMQP queue interface's structures and functions. */
 

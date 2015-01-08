@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_SESSION_STATE_H
-#define MQA_SESSION_STATE_H
+#ifndef SESSION_STATE_H
+#define SESSION_STATE_H
 
 /* The AMQP Session State enumeration. */
 enum session_state {

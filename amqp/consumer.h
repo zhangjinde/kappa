@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_CONSUMER_H
-#define MQA_CONSUMER_H
+#ifndef CONSUMER_H
+#define CONSUMER_H
 
 /* An AMQP consumer interface's structures and functions. */
 

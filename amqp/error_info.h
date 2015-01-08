@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_ERROR_INFO_H
-#define MQA_ERROR_INFO_H
+#ifndef ERROR_INFO_H
+#define ERROR_INFO_H
 
 /* The AMQP Error Info interface's structures and functions. */
 

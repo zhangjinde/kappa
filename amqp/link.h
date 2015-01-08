@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_LINK_H
-#define MQA_LINK_H
+#ifndef LINK_H
+#define LINK_H
 
 /* An AMQP link interface's structures and functions. */
 

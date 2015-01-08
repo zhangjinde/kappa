@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_FORMAT_CATEGORY_H
-#define MQA_FORMAT_CATEGORY_H
+#ifndef FORMAT_CATEGORY_H
+#define FORMAT_CATEGORY_H
 
 /* The AMQP Format Code Category enumeration. */
 enum format_category {

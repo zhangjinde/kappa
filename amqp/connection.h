@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_CONNECTION_H
-#define MQA_CONNECTION_H
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 /* An AMQP connection interface's structures and functions. */
 

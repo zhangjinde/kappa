@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_SESSION_H
-#define MQA_SESSION_H
+#ifndef SESSION_H
+#define SESSION_H
 
 /* An AMQP session interface's structures and functions. */
 

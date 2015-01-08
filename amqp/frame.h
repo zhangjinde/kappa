@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_FRAME_H
-#define MQA_FRAME_H
+#ifndef FRAME_H
+#define FRAME_H
 
 /* An AMQP frame interface's structures and functions. */
 

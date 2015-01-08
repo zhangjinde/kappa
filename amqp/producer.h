@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_PRODUCER_H
-#define MQA_PRODUCER_H
+#ifndef PRODUCER_H
+#define PRODUCER_H
 
 /*
 An AMQP producer interface's structures and functions. */

@@ -2,8 +2,8 @@
 Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
 This file is part of Kappa. */
 
-#ifndef MQA_TERMINUS_KIND_H
-#define MQA_TERMINUS_KIND_H
+#ifndef TERMINUS_KIND_H
+#define TERMINUS_KIND_H
 
 /* The AMQP terminus kind enumeration.
 There are two kinds of terminus: sources and targets. A terminus is responsible

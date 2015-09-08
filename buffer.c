@@ -1,15 +1,17 @@
-/* buffer structures and routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa. */
+/*
+* buffer structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
 
-#include "buffer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "buffer.h"
 
-static const short BUFFER_CHUNK = 16384;
-static const char LONG_STRING_MAX_SIZE = 11;
+static const short BUFFER_CHUNK = 0x4000;
+static const char LONG_STRING_MAX_SIZE = 16;
 
 enum buffer_meta {
     buffer_meta_delimiter = '%',

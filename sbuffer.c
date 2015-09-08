@@ -1,20 +1,20 @@
-/* simple io utility structures and routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa. */
+/*
+* string buffer utility structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
-#include "sio_errors.h"
-#include "sio_module.h"
-#include "sio_buffer.h"
+#include "error.h"
+#include "module.h"
+#include "sbuffer.h"
 
-enum { nul = '\0' };
-
-int string_set(char *buffer, size_t size, const char *format, ...) {
+int sbuffer_set(char *bf, size_t nb, const char *fmt, ...) {
     va_list argv;
     va_start(argv, format);
-    if((vsnprintf(buffer, size, format, argv)) >= size) {
+    if ((vsnprintf(bf, nb, fmt, argv)) >= nb) {
         va_end(argv);
         return error(bytes_discarded);
     }
@@ -22,9 +22,9 @@ int string_set(char *buffer, size_t size, const char *format, ...) {
     return 0;
 }
 
-int string_copy(char *buffer, size_t size, const char *source) {
-    (void)memset(buffer, nul, size);
-    strncpy(buffer, source, size - 1);
+int sbuffer_copy(char *bf, size_t nb, const char *src) {
+    (void)memset(bf, '\0', nb);
+    strncpy(bf, src, nb - 1);
     return 0;
 }
 

@@ -1,14 +1,16 @@
-/* simple io utility structures and routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa. */
+/*
+* error utility structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>
-#include "sio_error.h"
+#include "ferror.h"
 
-enum { buffer_limit = 128 };
+enum { buffer_limit = 0x100 };
 
 static void output(const char *format, va_list argv) {
     int sys_error = errno;
@@ -21,7 +23,7 @@ static void output(const char *format, va_list argv) {
     errno = 0;
 }
 
-int error_report(int value, ...) {
+int ferror_report(int value, ...) {
     const char *format = NULL;
     if(format) {
         va_list argv;
@@ -32,7 +34,7 @@ int error_report(int value, ...) {
     return value;
 }
 
-int error_finally(struct closure *finally, int value, ...) {
+int ferror_finally(struct closure *finally, int value, ...) {
     const char *format = NULL;
     if(format) {
         va_list argv;

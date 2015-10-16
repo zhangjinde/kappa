@@ -1,18 +1,19 @@
-/* simple io utility structures and routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa. */
+/*
+* module structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
 
-#ifndef SIO_MODULE_H
-#define SIO_MODULE_H
+#ifndef MODULE_H
+#define MODULE_H
 
-#include "sio_error.h"
-#include "sio_errors.h"
+#include "error.h"
 
 enum {
-    error_base = 0x0fa0
+    module_error_base = 0x0fa0
 };
 
-static struct error_type const errors[] = {
+static struct error_type const module_errors[] = {
     [unknown] = { .value = error_base | unknown, .format = "unknown error" },
     [stream_close_failed] = { .value = error_base | stream_close_failed, .format = "failed to close a file stream %s" },
     [stream_seek_failed] = { .value = error_base | stream_seek_failed, .format = "failed to seek a file stream %s" },

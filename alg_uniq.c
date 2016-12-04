@@ -1,3 +1,7 @@
+/* uniq utility routines
+Copyright (C) 2014-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+This file is part of Kappa. */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

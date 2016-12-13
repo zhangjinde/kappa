@@ -1,3 +1,7 @@
+/* hash utility routines
+Copyright (C) 2014-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+This file is part of Theta. */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

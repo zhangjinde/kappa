@@ -1,6 +1,6 @@
-KAPPA - ALGORITHMS, MESSAGE QUEUES, NETWORKS
+KAPPA - A UNIFIED PLATFORM FOR HANDLING REALTIME DATA STREAMS
 
-Kappa is a collection of routines for algorithms, message queues, and networks
-programming. Kappa is an Open Source project covered by the GNU General Public
+Kappa is a unified, high-throughput, low-latency platform for handling realtime
+data streams. Kappa is an Open Source project covered by the GNU General Public
 License version 3.
 

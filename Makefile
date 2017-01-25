@@ -8,8 +8,10 @@ WARN = -Wall -Weverything -Wpedantic
 
 OBJECTS += daemon.o
 OBJECTS += sequence.o
+OBJECTS += stream.o
 TESTS += test_daemon
 TESTS += test_sequence
+TESTS += test_stream
 
 $(TESTS): $(OBJECTS)
 	$(CC) $(CFLAGS) $(WARN) $@.c -o $@ $(OBJECTS)

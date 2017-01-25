@@ -1,7 +1,7 @@
 /*
-sequence structures and routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa.
+* sequence structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
 */
 
 #define _POSIX_SOURCE
@@ -17,6 +17,7 @@ This file is part of Kappa.
 #include <arpa/inet.h>
 #include "error.h"
 #include "daemon.h"
+#include "stream.h"
 #include "sequence.h"
 
 static int socket_close(int fd) {
@@ -61,13 +62,18 @@ static int address_make(struct sockaddr_in *addr, const char *host, unsigned sho
 int start_sequence(const char *host, unsigned short port, unsigned short queue) {
     int e, fd, afd;
     struct sockaddr_in addr;
+    char seq[] = { 0x30 };
+    ssize_t nbw = 0;
 
-    make_daemon(7, 0);
+    make_daemon(0, 0);
     if ((e = address_make(&addr, host, port)) == -1) return -1;
     if ((e = socket_make(&fd)) == -1) return -1;
     if ((e = socket_bind(fd, &addr)) == -1) return -1; 
     if ((e = socket_listen(fd, queue)) == -1) return -1;
-    if ((e = socket_accept(fd, &afd)) == -1) return -1;
+    for ( ; (e = socket_accept(fd, &afd)); ) {
+        if ((e = stream_write(afd, seq, sizeof seq, &nbw)) == -1) return -1;
+        if ((e = socket_close(afd)) == -1) return -1;
+    }
     if ((e = socket_close(fd)) == -1) return -1;
 
     return 0;

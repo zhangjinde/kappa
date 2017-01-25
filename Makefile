@@ -7,7 +7,9 @@ CFLAGS = -std=c89 -g -O0
 WARN = -Wall -Weverything -Wpedantic
 
 OBJECTS += daemon.o
+OBJECTS += sequence.o
 TESTS += test_daemon
+TESTS += test_sequence
 
 $(TESTS): $(OBJECTS)
 	$(CC) $(CFLAGS) $(WARN) $@.c -o $@ $(OBJECTS)

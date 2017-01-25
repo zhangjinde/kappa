@@ -13,7 +13,7 @@ static void test_sequence() {
     unsigned short port = 8000;
     unsigned short queue = 8;
 
-    int e = start_sequence(host, port, queue); 
+    int e = start_sequence(host, port, queue);
     assert(e==0);
 }
 

@@ -1,6 +1,8 @@
-/* multiplexing structures and routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa. */
+/*
+* multiplexing structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
 
 #define _POSIX_SOURCE
 
@@ -13,38 +15,42 @@ This file is part of Kappa. */
 
 struct mux_context {
     int highest;
-    fd_set readers;
+    fd_set readfds;
 };
 
-static void mux_init(struct mux_context *context, struct mux_func **funcs) {
+static void mux_init(
+    struct mux_context *context,
+    const struct mux_func **funcv
+) {
     int highest = 0;
-    for( ; *funcs && (highest = max(highest, (*funcs)->fileno)); funcs++);
-    context->highest = highest + 1;
-    FD_ZERO(&(context->readers));
+    for ( ; *funcv && (highest = max(highest, (*funcv)->fd)); funcv++);
+    context->highest = highest+1;
+    FD_ZERO(&(context->writerv));
 }
 
-static void mux_set(struct mux_context *context, struct mux_func **funcs) {
-    for( ; *funcs; funcs++)
-        if((*funcs)->active)
-            FD_SET((*funcs)->fileno, &(context->readers));
+static void mux_set(
+    struct mux_context *context,
+    struct mux_func **funcv
+) {
+    for ( ; *funcv; funcv++)
+        if ((*funcv)->is_active)
+            FD_SET((*funcv)->fd, &(context->writerv));
 }
 
-static int mux_active(struct mux_func **funcs) {
-    for( ; *funcs; funcs++)
-        if((*funcs)->active)
-            return 1;
-    return 0;
+static int mux_is_active(const struct mux_func **funcv) {
+    for ( ; *funcv; funcv++)
+        return (*funcs)->is_active ? 1 : 0;
 }
 
-void mux_mux(struct mux_func **funcs) {
+void mux(struct mux_func **funcv) {
     struct mux_context context;
-    mux_init(&context, funcs);
-    while(mux_active(funcs)) {
-        mux_set(&context, funcs);
-        select(context.highest, &(context.readers), NULL, NULL, NULL);
-        for( ; *funcs; funcs++)
-            if(FD_ISSET((*funcs)->fileno, &(context.readers)))
-                (*funcs)->exec(*funcs);
+    mux_init(&context, funcv);
+    while (mux_is_active(funcv)) {
+        mux_set(&context, funcv);
+        select(context.highest, NULL, &(context.writerv), NULL, NULL);
+        for ( ; *funcv; funcv++)
+            if (FD_ISSET((*funcv)->fd, &(context.writerv)))
+                (*funcv)->func(*funcv);
     }
 }
 

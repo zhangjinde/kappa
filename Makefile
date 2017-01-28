@@ -15,7 +15,7 @@ tests += test-daemon
 tests += test-sequence
 
 all: $(objects)
-test: $(tests); @(for test in $(tests); do ./$$test; done)
+test: $(tests); @(for test in $(tests); do ./test.sh $$test; done)
 test-%: $(objects) test-%.o; $(CC) $(CFLAGS) $^ -o $@
 clean: ; rm -f $(objects) $(tests) $(tests:=.o)
 

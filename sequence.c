@@ -44,13 +44,11 @@ static int provide_sequence() {
 
     for (;;) {
         if ((e = pthread_mutex_lock(&mutex))) return -1;
-
         while (!(nfds = get_nfds())) pthread_cond_wait(&cond, &mutex);
 
         FD_ZERO(&readfds);
         for (cfd = consumerfds; *cfd; cfd++) FD_SET(*cfd, &readfds);
 
-        if ((e = pthread_mutex_unlock(&mutex))) return -1;
         if ((e = select(nfds, &readfds, NULL, NULL, NULL)) == -1) return -1;
 
         for (fd = 0; fd < nfds; fd++) {
@@ -61,6 +59,8 @@ static int provide_sequence() {
                 ++seqnum;
             }
         }
+
+        if ((e = pthread_mutex_unlock(&mutex))) return -1;
     }
 }
 

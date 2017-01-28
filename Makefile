@@ -3,24 +3,19 @@
 # This file is part of Kappa.
 
 CC = cc
-CFLAGS = -std=c89 -g -O0
-WARN = -Wall -Weverything -Wpedantic
+CFLAGS += -std=c89 -g -O0
+CFLAGS += -Wall -Weverything -Wpedantic
 
-OBJECTS += daemon.o
-OBJECTS += sequence.o
-OBJECTS += stream.o
-TESTS += test_daemon
-TESTS += test_sequence
-TESTS += test_stream
+objects += stream.o
+objects += daemon.o
+objects += sequence.o
 
-$(TESTS): $(OBJECTS)
-	$(CC) $(CFLAGS) $(WARN) $@.c -o $@ $(OBJECTS)
+tests += test-stream
+tests += test-daemon
+tests += test-sequence
 
-test: $(TESTS)
-	@(for test in $(TESTS); do \
-        ./$$test; \
-    done)
-
-clean:
-	rm -rf $(OBJECTS) $(TESTS) *.dSYM
+all: $(objects)
+test: $(tests); @(for test in $(tests); do ./$$test; done)
+test-%: $(objects) test-%.o; $(CC) $(CFLAGS) $^ -o $@
+clean: ; rm -f $(objects) $(tests) $(tests:=.o)
 

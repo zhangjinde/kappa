@@ -9,10 +9,12 @@ CFLAGS += -Wall -Weverything -Wpedantic
 objects += stream.o
 objects += daemon.o
 objects += sequence.o
+objects += hash.o
 
 tests += test-stream
 tests += test-daemon
 tests += test-sequence
+tests += test-hash
 
 all: $(objects)
 test: $(tests); @(for test in $(tests); do ./test.sh $$test; done)

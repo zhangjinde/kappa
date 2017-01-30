@@ -1,4 +1,4 @@
-# Xcode
+# macos 
 .DS_Store
 build/
 *.pbxuser
@@ -14,5 +14,6 @@ build/
 xcuserdata
 profile
 *.moved-aside
-DerivedData
+DerivedData/
+*.dSYM/
 .idea/

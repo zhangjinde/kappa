@@ -17,9 +17,12 @@ static int fork_s() {
     }
 }
 
-static void close_fds(int maxfd) {
+static void close_fds(long maxfd) {
     int fd;
-    maxfd = ((maxfd = sysconf(_SC_OPEN_MAX)) == -1) ? flag_maxfd : maxfd;
+
+    maxfd = ((maxfd = sysconf(_SC_OPEN_MAX)) == -1) ?
+        daemon_default_maxfd : maxfd;
+
     for (fd=0; fd<maxfd; fd++)
         close(fd);
 }
@@ -34,7 +37,7 @@ static int reopen_stdfds() {
     return 0;
 }
 
-int make_daemon(int flag, int maxfd) {
+int make_daemon(int flag, long maxfd) {
     if (fork_s() == -1) return -1;
     if (setsid() == -1) return -1;
     if (fork_s() == -1) return -1;

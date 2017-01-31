@@ -12,11 +12,9 @@ enum flag {
     flag_no_reopen_stdfds = 0x02
 };
 
-enum {
-    flag_maxfd = 0x2000
-};
+static const long daemon_default_maxfd = 0x2000;
 
-int make_daemon(int flag, int maxfd);
+int make_daemon(int flag, long maxfd);
 
 #endif
 

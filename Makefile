@@ -10,15 +10,17 @@ CFLAGS += -Wno-c99-extensions
 
 QUIET_CC = @echo CC $@;
 
+objects += hash.o
 objects += stream.o
 objects += daemon.o
 objects += sequence.o
-objects += hash.o
+objects += ingress.o
 
+tests += test-hash
 tests += test-stream
 tests += test-daemon
 tests += test-sequence
-tests += test-hash
+tests += test-ingress
 
 objects: $(objects)
 $(objects): %.o: %.c %.h; $(QUIET_CC)$(CC) $(CFLAGS) -o $@ -c $<

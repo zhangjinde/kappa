@@ -35,7 +35,7 @@ static int get_nfds() {
     return (fd - consumerfds) ? (*--fd + 1) : 0;
 }
 
-static int provide_sequence() {
+static int provide_sequence(void) {
     int e, fd, *cfd, nfds = 0;
     fd_set readfds;
     ssize_t nbr, nbw;
@@ -114,10 +114,20 @@ int start_sequence(
     if ((e = bind(pfd, (struct sockaddr *)(&addr), sizeof addr))) return -1;
     if ((e = listen(pfd, queue))) return -1;
 
-    if ((e = pthread_create(&accept_consumers, NULL, accept_consumer, pfd)))
+    if ((e = pthread_create(
+            &accept_consumers,
+            NULL,
+            (void *(*)(void *))accept_consumer,
+            (void *)(intptr_t)pfd))
+    )
         return -1;
 
-    if ((e = pthread_create(&provide_sequences, NULL, provide_sequence, NULL)))
+    if ((e = pthread_create(
+            &provide_sequences,
+            NULL,
+            (void *(*)(void *))provide_sequence,
+            NULL))
+    )
         return -1;
 
     if ((e = pthread_join(accept_consumers, NULL))) return -1;

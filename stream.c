@@ -15,24 +15,24 @@
 #define done(err, nb) !((err==EINTR) && (nb<0))
 
 int stream_read(int fd, void *bf, size_t nb, ssize_t *nbr) {
-    const void *bfh = bf;
-    while ((*nbr = read(fd, bf, nb)) != 0) {
-        if (errors(errno, *nbr)) return -1;
-        bf += *nbr ? *nbr : 0;
-        if (done(errno, *nbr)) break;
+    ssize_t cnbr;
+    while ((cnbr = read(fd, bf, nb)) != 0) {
+        if (errors(errno, cnbr)) return -1;
+        bf = (char *)bf + (cnbr ? cnbr : 0);
+        *nbr += cnbr;
+        if (done(errno, cnbr)) break;
     }
-    *nbr = (bf - bfh);
     return 0;
 }
 
 int stream_write(int fd, const void *bf, size_t nb, ssize_t *nbw) {
-    const void *bfh = bf;
-    while ((*nbw = write(fd, bf, (nb - (size_t)(bf - bfh)))) != 0) {
+    ssize_t cnbw;
+    while ((cnbw = write(fd, bf, (nb - (size_t)*nbw))) != 0) {
         if (errors(errno, *nbw)) return -1;
-        bf += *nbw ? *nbw : 0;
-        if (done(errno, *nbw)) break;
+        bf = (const char *)bf + (*nbw ? *nbw : 0);
+        *nbw += cnbw;
+        if (done(errno, cnbw)) break;
     }
-    *nbw = (bf - bfh);
     return 0;
 }
 

@@ -15,7 +15,6 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include "sequence.h"
-#include "sequence.h"
 
 static int test_fetch_sequence(
     const char *host,

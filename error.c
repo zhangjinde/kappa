@@ -1,69 +1,42 @@
-/* error utility routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa. */
+/*
+* error utility structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
-#include <assert.h>
-#include "trace.h"
+#include <errno.h>
+#include "log.h"
 #include "error.h"
 
-static const size_t MESSAGE_MAX_LENGTH = 256;
-static const char *ARGUMENT_NULL = "Null is not a valid value.\n";
+enum { buffer_max_size = 0x0100 };
 
-static void error_trace(const char *message, va_list varg) {
-    char string[MESSAGE_MAX_LENGTH];
-    vsnprintf(string, sizeof(string), message, varg);
-    trace(string);
-}
+int error(const char *fmt, ...) {
+    char bf[buffer_max_size];
+    va_list varg;
+    const int error_num = errno;
+    char *error_msg = NULL;
 
-void error(int quit, const char *message, ...) {
-    va_list vargs;
-    va_start(vargs, format);
-    error_trace(format, vargs);
-    va_end(vargs);
-    if(quit == 1) exit(EXIT_FAILURE);
-}
+    if (error_num)
+        error_msg = strerror(error_num);
 
-void fail(void *args) {
-    abort();
-}
+    va_start(varg, fmt);
 
-void null(void *args) {
-    fprintf(stderr, "%s", ARGUMENT_NULL);
-    fail(args);
-}
+    memset(bf, 0, sizeof(bf));
+    if (vsnprintf(bf, sizeof(bf), fmt, varg) >= sizeof(bf))
+        log_warning("some of the characters were discarded from the message");
 
-void err(args args) {
-    if(args.message) fprintf(stderr, args.format ? args.format : "%s", args.message);
-    if(args.func) args.func(args.arg);
-}
+    va_end(varg);
 
-char *format(char const *format, ...) {
-    char *output;
-    va_list list;
-    va_start(list, format);
-    size_t size = vsnprintf(NULL, 0, format, list) + 1;
-    if((output = malloc(size)) == NULL) return(NULL);
-    vsnprintf(output, size, format, list);
-    va_end(list);
-    return(output);
-}
-
-void concat(char **target, char const *source) {
-    if(!source) { fprintf(stderr, "Null is not a valid value.\n"); exit(1); }
-    if(*target) {
-        char buffer[strlen(*target) + 1];
-        strcpy(buffer, *target);
-        free(*target);
-        *target = malloc(strlen(buffer) + strlen(source) + 1);
-        strcpy(*target, buffer);
-        strcat(*target, source);
-    } else {
-        *target = malloc(strlen(source) + 1);
-        strcpy(*target, source);
+    if (error_num) {
+        if (snprintf(bf, sizeof(bf), "%s, %s: %d", bf, error_msg, error_num) >= sizeof(bf))
+            log_warning("some of the characters were discarded from the message");
     }
+
+    log_error(bf);
+    errno = error_num;
+
+    return -1;
 }
 

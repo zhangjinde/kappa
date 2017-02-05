@@ -1,26 +1,40 @@
-/* trace utility routines
-Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
-This file is part of Kappa. */
+/*
+* trace utility structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
 
-#include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
-#include <syslog.h>
+#include <string.h>
+#include <errno.h>
+#include "log.h"
 #include "trace.h"
 
-static const size_t MESSAGE_MAX_LENGTH = 256;
+enum { buffer_max_size = 0x0100 };
 
-static void trace_write(const char *message) {
-    openlog("quux", LOG_CONS | LOG_PID, LOG_LOCAL0);
-    syslog(LOG_NOTICE, "%s", message);
-}
-
-void trace(const char *format, ...) {
+void trace(const char *fmt, ...) {
+    char bf[buffer_max_size];
     va_list varg;
-    va_start(varg, format);
-    char message[MESSAGE_MAX_LENGTH];
-    vsnprintf(message, sizeof(message), format, varg);
-    trace_write(message);
+    const int error_num = errno;
+    char *error_msg = NULL;
+
+    if (error_num)
+        error_msg = strerror(error_num);
+
+    va_start(varg, fmt);
+
+    memset(bf, 0, sizeof(bf));
+    if (vsnprintf(bf, sizeof(bf), fmt, varg) >= sizeof(bf))
+        log_warning("some of the characters were discarded from the message");
+
     va_end(varg);
+
+    if (error_num) {
+        if (snprintf(bf, sizeof(bf), "%s, %s: %d", bf, error_msg, error_num) >= sizeof(bf))
+            log_warning("some of the characters were discarded from the message");
+    }
+
+    log_error(bf);
+    errno = error_num;
 }
 

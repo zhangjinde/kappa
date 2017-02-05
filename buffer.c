@@ -13,6 +13,20 @@
 static const short BUFFER_CHUNK = 0x4000;
 static const char LONG_STRING_MAX_SIZE = 16;
 
+static void error_concat(char **target, char const *source) {
+    if(*target) {
+        char buffer[strlen(*target) + 1];
+        strcpy(buffer, *target);
+        free(*target);
+        *target = malloc(strlen(buffer) + strlen(source) + 1);
+        strcpy(*target, buffer);
+        strcat(*target, source);
+    } else {
+        *target = malloc(strlen(source) + 1);
+        strcpy(*target, source);
+    }
+}
+
 enum buffer_meta {
     buffer_meta_delimiter = '%',
     buffer_meta_string = 's',
@@ -85,5 +99,35 @@ void buffer_reset(struct buffer* buffer) {
 void buffer_free(struct buffer* buffer) {
     free(buffer->head);
     free(buffer);
+}
+
+/*
+* string buffer utility structures and routines
+* Copyright (C) 2013-2017 Roman Fakhrazeyev <roman.fakhrazeyev@xinoir.com>
+* This file is part of Kappa.
+*/
+
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+#include "error.h"
+#include "module.h"
+#include "sbuffer.h"
+
+int sbuffer_set(char *bf, size_t nb, const char *fmt, ...) {
+    va_list argv;
+    va_start(argv, format);
+    if ((vsnprintf(bf, nb, fmt, argv)) >= nb) {
+        va_end(argv);
+        return error(bytes_discarded);
+    }
+    va_end(argv);
+    return 0;
+}
+
+int sbuffer_copy(char *bf, size_t nb, const char *src) {
+    (void)memset(bf, '\0', nb);
+    strncpy(bf, src, nb - 1);
+    return 0;
 }
 

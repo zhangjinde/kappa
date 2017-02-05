@@ -7,7 +7,10 @@
 #ifndef SEQUENCE_H
 #define SEQUENCE_H
 
-int start_sequence(
+typedef struct sequence sequence_t;
+
+int sequence_create(
+    sequence_t **sequence,
     const char *host,
     unsigned short port,
     unsigned short queue

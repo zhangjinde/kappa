@@ -19,68 +19,27 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "error.h"
-#include "daemon.h"
+#include "debug.h"
 #include "stream.h"
+#include "daemon.h"
 #include "sequence.h"
 
-static int seqnum = 0x30;
-static int consumerfds[8] = { 0 };
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-static int accept_socket(int pfd, int *afd);
+struct sequence {
+    int pfd;
+    int nafds;
+    int hafds;
+    pthread_t threads[0x01];
+    int afds[0x0100];
+};
 
-static int get_nfds() {
-    int *fd;
-    for (fd = consumerfds; *fd; fd++);
-    return (fd - consumerfds) ? (*--fd + 1) : 0;
-}
-
-static int provide_sequence(void) {
-    int e, fd, *cfd, nfds = 0;
-    fd_set readfds;
-    ssize_t nbr, nbw;
-    int wbf[] = { 0 };
-    char rbf[] = { 0 };
-
-    for (;;) {
-        if ((e = pthread_mutex_lock(&mutex))) return -1;
-        while (!(nfds = get_nfds())) pthread_cond_wait(&cond, &mutex);
-
-        FD_ZERO(&readfds);
-        for (cfd = consumerfds; *cfd; cfd++) FD_SET(*cfd, &readfds);
-
-        if ((e = select(nfds, &readfds, NULL, NULL, NULL)) == -1) return -1;
-
-        for (fd = 0; fd < nfds; fd++) {
-            if (FD_ISSET(fd, &readfds)) {
-                wbf[0] = seqnum;
-                if ((e = stream_read(fd, rbf, sizeof rbf, &nbr))) return -1;
-                if ((e = stream_write(fd, wbf, sizeof wbf, &nbw))) return -1;
-                ++seqnum;
-            }
-        }
-
-        if ((e = pthread_mutex_unlock(&mutex))) return -1;
-    }
-}
-
-static int accept_consumer(int pfd) {
-    for (int afd, e; ; afd = e = 0) {
-        e = accept_socket(pfd, &afd);
-        if ((e = pthread_mutex_lock(&mutex))) return -1;
-        for (int *cfd = consumerfds; *cfd; cfd++);
-        *cfd = afd;
-        if ((e = pthread_mutex_unlock(&mutex))) return -1;
-        if ((e = pthread_cond_signal(&cond))) return -1;
-    }
-}
-
-static int accept_socket(int pfd, int *afd) {
-    struct sockaddr_in addr;
-    socklen_t addrlen = sizeof(addr);
-    *afd = accept(pfd, (struct sockaddr *)(&addr), &addrlen);
-    if (*afd < 0 && errno != EINTR) return -1;
-    return 0;
+static void sigaction_handler(
+    int sig,
+    siginfo_t *siginfo,
+    void *context
+) {
+    debug("sig %d %s\n", sig, __func__); 
+    if (sig == SIGINT || sig == SIGTERM) return;
+    if (sig == SIGSEGV) exit(EXIT_FAILURE);
 }
 
 static int make_address(
@@ -98,42 +57,120 @@ static int make_address(
     }
 }
 
-int start_sequence(
+static int service(struct sequence *sequence) {
+    int e, sig, fd, afd, nsfds;
+    struct sockaddr_in addr;
+    socklen_t addrlen = sizeof(struct sockaddr_in);
+    fd_set readfds, sreadfds;
+    ssize_t nbr, nbw;
+    char wbf[0x02] = { 0 };
+    char rbf[0x10] = { 0 };
+
+    struct sigaction sig_action;
+    sig_action.sa_sigaction = sigaction_handler;
+    sig_action.sa_flags = SA_SIGINFO;
+    sigfillset(&sig_action.sa_mask);
+    for (sig = 1; sig < 32; sig++)
+        if (
+            sig != SIGTSTP && sig != SIGSTOP &&
+            sig != SIGQUIT && sig != SIGKILL
+        )
+            if ((e = sigaction(sig, &sig_action, NULL)))
+                error("sigaction failed");
+
+    FD_ZERO(&readfds);
+    for (fd = 0; fd <= sequence->hafds; fd++)
+        if (sequence->afds[fd]) FD_SET(fd, &readfds);
+
+    for (;;) {
+
+        sreadfds = readfds;
+        if ((nsfds = select(sequence->hafds + 1, &sreadfds, NULL, NULL, NULL)) == -1)
+            error("selecting on readfds failed");
+
+        for (fd = 0; fd <= sequence->hafds && nsfds; fd++) {
+
+            if (FD_ISSET(fd, &sreadfds)) {
+
+                --nsfds;
+
+                if (fd == sequence->pfd) {
+
+                    afd = accept(fd, (struct sockaddr *)(&addr), &addrlen);
+                    if (afd < 0 && errno != EINTR)
+                        error("accepting a socket failed");
+
+                    sequence->afds[afd] = 1;
+                    ++sequence->nafds;
+                    if (sequence->hafds < afd) sequence->hafds = afd;
+                    FD_SET(afd, &readfds);
+                    continue;
+                }
+
+                if ((e = stream_read(fd, rbf, sizeof rbf, &nbr)))
+                    error("reading from a socket failed");
+
+                if (!nbr) {
+
+                    FD_CLR(fd, &readfds);
+
+                    if ((e = close(fd)))
+                        error("closing a socket failed");
+
+                    sequence->afds[fd] = 0;
+                    --sequence->nafds;
+                    continue;
+                }
+
+                wbf[0] = 0x30;
+                if ((e = stream_write(fd, wbf, sizeof wbf, &nbw)))
+                    error("writing to a socket failed");
+            }
+        }
+    }
+}
+
+int sequence_create(
+    sequence_t **sequence,
     const char *host,
     unsigned short port,
     unsigned short queue
 ) {
     int e, pfd;
     struct sockaddr_in addr;
-    pthread_t accept_consumers, provide_sequences;
 
-    if ((e = make_daemon(0, 0))) return -1;
-    if ((e = make_address(&addr, host, port))) return -1;
+    if (!(*sequence = (struct sequence*)malloc(sizeof(struct sequence))))
+        return error("a sequence could not be allocated%s", __func__);
+    
+    if ((e = make_address(&addr, host, port)))
+        return error("a socket address could not be created %s", __func__);
 
-    if ((pfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) return -1;
-    if ((e = bind(pfd, (struct sockaddr *)(&addr), sizeof addr))) return -1;
-    if ((e = listen(pfd, queue))) return -1;
+    if ((pfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        return error("a socket could not be created %s", __func__);
+
+    if ((e = bind(pfd, (struct sockaddr *)(&addr), sizeof addr)))
+        return error("a socket could not be bound %s", __func__);
+
+    if ((e = listen(pfd, queue))) {
+        return error("a socket could not listen %s", __func__);
+    }
+
+    (*sequence)->pfd = pfd;
+    memset((*sequence)->afds, 0, sizeof (*sequence)->afds);
+    (*sequence)->afds[pfd] = 1;
+    (*sequence)->nafds = 1;
+    (*sequence)->hafds = pfd;
 
     if ((e = pthread_create(
-            &accept_consumers,
+            &(*sequence)->threads[0],
             NULL,
-            (void *(*)(void *))accept_consumer,
-            (void *)(intptr_t)pfd))
-    )
-        return -1;
+            (void *(*)(void *))service,
+            (void *)*sequence
+        )
+    )) return error("sequence service thread could not be created %s", __func__);
 
-    if ((e = pthread_create(
-            &provide_sequences,
-            NULL,
-            (void *(*)(void *))provide_sequence,
-            NULL))
-    )
-        return -1;
-
-    if ((e = pthread_join(accept_consumers, NULL))) return -1;
-    if ((e = pthread_join(provide_sequences, NULL))) return -1;
-
-    if ((e = close(pfd))) return -1;
+    if ((e = pthread_join((*sequence)->threads[0], NULL))) return 1;
+    if ((e = close(pfd))) return 1;
 
     return 0;
 }

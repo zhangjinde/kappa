@@ -6,7 +6,6 @@ CC = cc
 CFLAGS += -std=c89 -g -O0
 CFLAGS += -Wall -Weverything -Wpedantic
 CFLAGS += -Wno-declaration-after-statement -Wno-reserved-id-macro
-CFLAGS += -Wno-c99-extensions
 
 QUIET_CC = @echo CC $@;
 

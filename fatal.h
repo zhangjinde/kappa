@@ -8,9 +8,9 @@
 #define FATAL_H
 
 #include <stdarg.h>
-#include <stdnoreturn.h>
+#include "noreturn.h"
 
-_Noreturn void fatal(const char *fmt, ...);
+noreturn void fatal(const char *fmt, ...);
 
 #endif
 

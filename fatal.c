@@ -4,40 +4,18 @@
 * This file is part of Kappa.
 */
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
 #include "log.h"
 #include "fatal.h"
 
-enum { buffer_max_size = 0x0100 };
-
-_Noreturn void fatal(const char *fmt, ...) {
-    char bf[buffer_max_size];
+noreturn void fatal(const char *fmt, ...) {
     va_list varg;
-    const int error_num = errno;
-    char *error_msg = NULL;
-
-    if (error_num)
-        error_msg = strerror(error_num);
 
     va_start(varg, fmt);
-
-    memset(bf, 0, sizeof(bf));
-    if (vsnprintf(bf, sizeof(bf), fmt, varg) >= sizeof(bf))
-        log_warning("some of the characters were discarded from the message");
-
+    log_fatal(fmt, varg, errno);
     va_end(varg);
 
-    if (error_num) {
-        if (snprintf(bf, sizeof(bf), "%s, %s: %d", bf, error_msg, error_num) >= sizeof(bf))
-            log_warning("some of the characters were discarded from the message");
-    }
-
-    log_error(bf);
-    errno = error_num;
-
-    exit(0x80);
+    exit(EXIT_FAILURE);
 }
 

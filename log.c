@@ -35,7 +35,7 @@ static const struct {
     [error_chars_discarded] = { "some of the characters were discarded from the logged message", 0x0fa1, 0 }
 };
 
-static void make_log_message(
+static int make_log_message(
     char *bf,
     size_t bfsz,
     const char *fmt,
@@ -50,30 +50,40 @@ static void make_log_message(
 
     memset(bf, 0, bfsz);
 
-    if ((e = vsnprintf(bf, bfsz, fmt, varg)) < 0)
+    if ((e = vsnprintf(bf, bfsz, fmt, varg)) < 0) {
         syslog(LOG_CRIT, "%m");
-    else if ((size_t)e >= bfsz)
+        return -1;
+    } else if ((size_t)e >= bfsz)
         syslog(LOG_WARNING, "%s: [%d]",
             errors[error_chars_discarded].message,
             errors[error_chars_discarded].number
         );
 
     if (err_msg) {
-        if ((e = snprintf(bf, bfsz, "%s, %s: [%d]", bf, err_msg, err_num)) < 0)
+        if ((e = 
+            snprintf(bf, bfsz, "%s, %s: [%d]", bf, err_msg, err_num)) < 0
+        ) {
             syslog(LOG_CRIT, "%s, %s: [%d]", __func__, strerror(errno), errno);
-        else if ((size_t)e >= bfsz)
+            return -1;
+        } else if ((size_t)e >= bfsz)
             syslog(LOG_WARNING, "%s: [%d]",
                 errors[error_chars_discarded].message,
                 errors[error_chars_discarded].number
             );
     }
+
+    return 0;
 }
 
 static void trace(const char *fmt, ...) {
     va_list varg;
+    char bf[buffer_size_limit];
 
     va_start(varg, fmt);
-    log_trace(fmt, varg);
+
+    if (!make_log_message(bf, sizeof(bf), fmt, varg, 0))
+        syslog(LOG_INFO, "%s", bf);
+
     va_end(varg);
 }
 
@@ -81,7 +91,8 @@ void log_debug(const char *fmt, va_list varg) {
     const int err_num = errno;
     char bf[buffer_size_limit];
 
-    make_log_message(bf, sizeof(bf), fmt, varg, 0);
+    if (!make_log_message(bf, sizeof(bf), fmt, varg, 0))
+        syslog(LOG_DEBUG, "%s", bf);
 
     errno = err_num;
 }
@@ -90,7 +101,8 @@ void log_trace(const char *fmt, va_list varg) {
     const int err_num = errno;
     char bf[buffer_size_limit];
 
-    make_log_message(bf, sizeof(bf), fmt, varg, 0);
+    if (!make_log_message(bf, sizeof(bf), fmt, varg, 0))
+        syslog(LOG_INFO, "%s", bf);
 
     errno = err_num;
 }
@@ -99,7 +111,8 @@ void log_warning(const char *fmt, va_list varg) {
     const int err_num = errno;
     char bf[buffer_size_limit];
 
-    make_log_message(bf, sizeof(bf), fmt, varg, 0);
+    if (!make_log_message(bf, sizeof(bf), fmt, varg, 0))
+        syslog(LOG_WARNING, "%s", bf);
 
     errno = err_num;
 }
@@ -107,13 +120,15 @@ void log_warning(const char *fmt, va_list varg) {
 void log_error(const char *fmt, va_list varg, int err_num) {
     char bf[buffer_size_limit];
 
-    make_log_message(bf, sizeof(bf), fmt, varg, err_num);
+    if (!make_log_message(bf, sizeof(bf), fmt, varg, err_num))
+        syslog(LOG_ERR, "%s", bf);
 }
 
 void log_fatal(const char *fmt, va_list varg, int err_num) {
     char bf[buffer_size_limit];
 
-    make_log_message(bf, sizeof(bf), fmt, varg, err_num);
+    if (!make_log_message(bf, sizeof(bf), fmt, varg, err_num))
+        syslog(LOG_EMERG, "%s", bf);
 }
 
 void log_deinit(const char *module) {

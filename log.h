@@ -7,11 +7,14 @@
 #ifndef LOG_H
 #define LOG_H
 
-void log_fatal(const char *msg);
-void log_error(const char *msg);
-void log_warning(const char *msg);
-void log_trace(const char *msg);
-void log_debug(const char *msg);
+#include <stdarg.h>
+
+void log_debug(const char *fmt, va_list varg);
+void log_trace(const char *fmt, va_list varg);
+void log_warning(const char *fmt, va_list varg);
+void log_error(const char *fmt, va_list varg, int err_num);
+void log_fatal(const char *fmt, va_list varg, int err_num);
+void log_deinit(const char *module);
 void log_init(const char *module);
 
 #endif

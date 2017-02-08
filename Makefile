@@ -20,6 +20,7 @@ objects += daemon.o
 
 tests += test-log
 tests += test-fatal
+tests += test-error
 
 harnesses += test-fatal-harness
 

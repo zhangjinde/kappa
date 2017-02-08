@@ -11,12 +11,14 @@
 static int test_hash(int i, int n) {
     assert(hash(i, n) == hash(i, n));
     assert(hash(i, n) != hash(i, n*10));
+
     return 0;
 }
 
 
 int main(void) {
-    if (test_hash(1, 100)) exit(EXIT_FAILURE);
+    if (test_hash(1, 100)) assert(0);
+
     exit(EXIT_SUCCESS);
 }
 

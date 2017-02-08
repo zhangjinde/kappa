@@ -21,6 +21,8 @@ objects += daemon.o
 tests += test-log
 tests += test-fatal
 tests += test-error
+tests += test-hash
+tests += test-stream
 
 harnesses += test-fatal-harness
 

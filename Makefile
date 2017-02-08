@@ -3,29 +3,36 @@
 # This file is part of Kappa.
 
 CC = cc
-CFLAGS += -std=c89 -g -O0
-CFLAGS += -Wall -Weverything -Wpedantic
-CFLAGS += -Wno-declaration-after-statement -Wno-reserved-id-macro
+CFLAGS += -g -O0
+CFLAGS += -Wall -Wextra
 
 QUIET_CC = @echo CC $@;
 
+objects += log.o
+objects += fatal.o
+objects += error.o
+objects += warning.o
+objects += trace.o
+objects += debug.o
 objects += hash.o
 objects += stream.o
 objects += daemon.o
-objects += sequence.o
-objects += ingress.o
 
-tests += test-hash
-tests += test-stream
-tests += test-daemon
-tests += test-sequence
-tests += test-ingress
+tests += test-log
+tests += test-fatal
+
+harnesses += test-fatal-harness
 
 objects: $(objects)
 $(objects): %.o: %.c %.h; $(QUIET_CC)$(CC) $(CFLAGS) -o $@ -c $<
 test: force tests; @(for test in $(tests); do ./test.sh $$test; done)
-tests: $(objects) $(tests);
+tests: $(objects) $(tests) $(harnesses);
 $(tests): %: %.c; $(QUIET_CC)$(CC) $(CFLAGS) $(objects) -o $@ $<
-clean: force; @rm -rf $(objects) $(tests) $(tests:=.o) $(tests:=.dSYM)
+$(harnesses): %: %.c; $(QUIET_CC)$(CC) $(CFLAGS) $(objects) -o $@ $<
+clean: force;
+	@rm -rf \
+        $(objects) \
+        $(tests) $(tests:=.o) $(tests:=.dSYM) \
+        $(harnesses) $(harnesses:=.o) $(harnesses:=.dSYM)
 force:
 

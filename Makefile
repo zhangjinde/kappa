@@ -14,8 +14,10 @@ objects += error.o
 objects += warning.o
 objects += trace.o
 objects += debug.o
+objects += debug-signal.o
 objects += hash.o
 objects += stream.o
+objects += string-extension.o
 objects += daemon.o
 
 tests += test-log
@@ -23,14 +25,17 @@ tests += test-fatal
 tests += test-error
 tests += test-hash
 tests += test-stream
+tests += test-string
+tests += test-daemon
 
 harnesses += test-fatal-harness
+#harnesses += test-daemon-harness
 
 objects: $(objects)
 $(objects): %.o: %.c %.h; $(QUIET_CC)$(CC) $(CFLAGS) -o $@ -c $<
 test: force tests; @(for test in $(tests); do ./test.sh $$test; done)
 tests: $(objects) $(tests) $(harnesses);
-$(tests): %: %.c; $(QUIET_CC)$(CC) $(CFLAGS) $(objects) -o $@ $<
+$(tests): %: %.c $(objects); $(QUIET_CC)$(CC) $(CFLAGS) $(objects) -o $@ $<
 $(harnesses): %: %.c; $(QUIET_CC)$(CC) $(CFLAGS) $(objects) -o $@ $<
 clean: force;
 	@rm -rf \

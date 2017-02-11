@@ -11,7 +11,6 @@
 #include "log.h"
 
 static int test_log_overflow() {
-    va_list varg;
     const char msg[] = "testing logging a message with overflow";
     char bf[0x1000];
 
@@ -19,7 +18,7 @@ static int test_log_overflow() {
     memset(bf + sizeof(msg) - 1, '0', sizeof(bf) - sizeof(msg));
     bf[sizeof(bf) - 1] = 0;
 
-    log_debug(bf, varg);
+    log_debug(bf, NULL);
 
     return 0;
 }
@@ -39,9 +38,7 @@ static int test_log_varg_errno(int arg, ...) {
 }
 
 static int test_log_no_varg() {
-    va_list varg;
-
-    log_debug("testing logging a message with no arguments", varg);
+    log_debug("testing logging a message with no arguments", NULL);
 
     return 0;
 }

@@ -19,7 +19,7 @@ void string_from_int(char *s, int n) {
     int i, is_neg;
 
     if ((is_neg = n < 0)) n = -n;
-    for (i = 0; (!i && !n) || (i && n); i++, n /= 10)
+    for (i = 0; (!i && !n) || (n); i++, n /= 10)
         s[i] = (n % 10) + '0';
     if (is_neg) s[i] = '-';
     s[i++] = '\0';

@@ -23,13 +23,13 @@ static int test_string_from_int() {
     char s[16] = {0};
 
     string_from_int(s, 0);
-    assert(!(s == "0"));
+    assert(!strcmp(s, "0"));
 
     string_from_int(s, INT_MAX);
-    assert(!(s == "2147483647"));
+    assert(!strcmp(s, "2147483647"));
 
     string_from_int(s, INT_MIN);
-    assert(!(s == "-2147483648"));
+    assert(!strcmp(s, "-2147483648"));
 
     return 0;
 }

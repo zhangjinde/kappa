@@ -1,5 +1,5 @@
 * ensure that only one instance of the sequence daemon is running on the system
 at a time
 
-* write log messages for sequence daemon
+* fix an exit status from fatal, shell returns 256, apply waitpid sematics
 

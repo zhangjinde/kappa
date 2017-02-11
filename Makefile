@@ -29,7 +29,7 @@ tests += test-string
 tests += test-daemon
 
 harnesses += test-fatal-harness
-#harnesses += test-daemon-harness
+harnesses += test-daemon-harness
 
 objects: $(objects)
 $(objects): %.o: %.c %.h; $(QUIET_CC)$(CC) $(CFLAGS) -o $@ -c $<

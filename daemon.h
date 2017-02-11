@@ -7,14 +7,16 @@
 #ifndef DAEMON_H
 #define DAEMON_H
 
-enum flag {
-    flag_no_close_fds = 0x01,
-    flag_no_reopen_stdfds = 0x02
+typedef enum {
+    daemon_flag_no_close_fds = 0x01,
+    daemon_flag_no_reopen_stdfds = 0x02
+} daemon_flag_t;
+
+enum {
+    daemon_default_maxfd = 0x1000
 };
 
-static const long daemon_default_maxfd = 0x1000;
-
-int make_daemon(int flag, long maxfd);
+int make_daemon(daemon_flag_t flag, long maxfd);
 
 #endif
 

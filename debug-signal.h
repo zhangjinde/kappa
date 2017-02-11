@@ -11,7 +11,10 @@
 #include <stdarg.h>
 
 const char *debug_signame(int sig); 
-void debug_sigset(const sigset_t *sigset); 
+void debug_sigaction(int sig, const siginfo_t *siginfo);
+void debug_sigset(const sigset_t *sigset, const char *msg); 
+void debug_sigprocmask(); 
+void debug_sigpending(); 
 
 #endif
 

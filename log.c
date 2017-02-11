@@ -43,13 +43,16 @@ static int make_log_message(
     int err_num
 ) {
     int e;
+    va_list empty_varg;
     const char *err_msg = NULL;
+
+    if (!varg) varg = empty_varg;
 
     if (err_num)
         err_msg = strerror(err_num);
 
     memset(bf, 0, bfsz);
-
+    
     if ((e = vsnprintf(bf, bfsz, fmt, varg)) < 0) {
         syslog(LOG_CRIT, "%m");
         return -1;

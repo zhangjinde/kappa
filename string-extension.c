@@ -16,13 +16,16 @@ void string_reverse(char *s) {
 }
 
 void string_from_int(char *s, int n) {
+    /* cast to an unsigned to handle a case of INT_MIN */
+    unsigned u;
     int i, is_neg;
 
-    if ((is_neg = n < 0)) n = -n;
-    for (i = 0; (!i && !n) || (n); i++, n /= 10)
-        s[i] = (n % 10) + '0';
+    u = (is_neg = n < 0) ? -n : n;
+    
+    for (i = 0; (!i && !u) || (u); i++, u /= 10)
+        s[i] = (u % 10) + '0';
     if (is_neg) s[i] = '-';
-    s[i++] = '\0';
+    s[++i] = '\0';
     string_reverse(s);
 }
 

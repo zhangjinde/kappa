@@ -17,7 +17,7 @@ objects += debug.o
 objects += debug-signal.o
 objects += hash.o
 objects += stream.o
-objects += string-extension.o
+objects += stringlib.o
 objects += daemon.o
 
 tests += test-log
@@ -25,7 +25,7 @@ tests += test-fatal
 tests += test-error
 tests += test-hash
 tests += test-stream
-tests += test-string
+tests += test-stringlib
 tests += test-daemon
 
 harnesses += test-fatal-harness

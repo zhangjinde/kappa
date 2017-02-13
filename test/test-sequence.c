@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <signal.h>
 #include <assert.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -14,8 +15,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include "error.h"
 #include "sequence.h"
 
+/*
 static int test_fetch_sequence(
     const char *host,
     unsigned short port,
@@ -29,7 +32,7 @@ static int test_fetch_sequence(
     memset(&addr, 0, sizeof addr);
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    if ((e = inet_pton(addr.sin_family, host, &addr.sin_addr)) > 0) return 1;
+    if ((e = inet_pton(addr.sin_family, host, &addr.sin_addr)) != 1) return 1;
 
     if ((fd = socket(PF_INET, SOCK_STREAM, 0)) == -1) return 1;
     if ((e = connect(fd, (struct sockaddr *)(&addr), sizeof addr))) return 1;
@@ -56,24 +59,35 @@ static int test_fetch_sequence(
 
     return 0;
 }
+*/
 
-
-static int test_start_sequence(
+static int test_sequence_create(
     const char *host,
     unsigned short port,
     unsigned short queue
 ) {
-    if (start_sequence(host, port, queue)) return 1;
+    int e;
+    sequence_t *sequence;
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+
+    if ((e = pthread_mutex_init(&mutex, NULL))) return 1;
+    if ((e = pthread_cond_init(&cond, NULL))) return 1;
+    if (sequence_create(&sequence, host, port, queue)) return 1;
+    for (;;) if ((e = pthread_cond_wait(&cond, &mutex))) return 1;
+    free(sequence);
     return 0;
 }
 
 int main(void) {
     const char *host = "127.0.0.1";
-    unsigned short port = 8000;
+    unsigned short port = 64000;
     unsigned short queue = 8;
 
-    if (test_start_sequence(host, port, queue)) assert(0);
+    if (test_sequence_create(host, port, queue)) assert(0);
+/*
     if (test_fetch_sequence(host, port, queue)) assert(0);
+*/
     exit(EXIT_SUCCESS);
 }
 

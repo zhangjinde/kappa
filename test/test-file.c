@@ -8,7 +8,6 @@ This file is part of Kappa. */
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
-#include "../sio_file.h"
 
 static void test_file_created() {
     const char *url = ".output/file";

@@ -16,7 +16,7 @@
 #include "error.h"
 #include "trace.h"
 #include "debug.h"
-#include "debug-signal.h"
+#include "signallib.h"
 #include "daemon.h"
 
 static void terminate(void) {
@@ -33,7 +33,7 @@ static void default_sigaction_handler(
 
 #ifndef NDEBUG
 /* not async-signal-safe */
-    debug_sigaction(sig, siginfo);
+    signal_trace_sigaction(sig, siginfo);
 #endif
 
     errno = oerrno; 
@@ -50,7 +50,10 @@ static int install_default_sigaction_handlers() {
     for (sig = 1; sig < NSIG; sig++)
         if (sig != SIGSTOP && sig != SIGKILL)
             if (sigaction(sig, &sig_action, NULL))
-                return error("installing a handler for [%s] failed", strsignal(sig));
+                return error(
+                    "installing a handler for [%s] failed",
+                    signal_signame(sig)
+                );
 
     return 0;
 }

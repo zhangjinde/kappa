@@ -14,10 +14,10 @@ objects += error.o
 objects += warning.o
 objects += trace.o
 objects += debug.o
-objects += debug-signal.o
+objects += stringlib.o
+objects += signallib.o
 objects += hash.o
 objects += stream.o
-objects += stringlib.o
 objects += daemon.o
 
 tests += test-log

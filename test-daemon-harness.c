@@ -20,12 +20,8 @@
 #include "error.h"
 #include "trace.h"
 #include "debug.h"
-#include "debug-signal.h"
+#include "signallib.h"
 #include "daemon.h"
-
-static void terminate(void) {
-    trace("terminated a process");
-}
 
 int main(int argc, const char **argv) {
     int e;
@@ -50,12 +46,6 @@ int main(int argc, const char **argv) {
 
     if (make_daemon(0, 0))
         fatal("making a daemon [%s] failed", mod_name);
-
-    debug_sigprocmask();
-    debug_sigpending();
-
-    if ((e = atexit(terminate)))
-        fatal("a termination handler could not be registered, [%s]", mod_name);
 
     if (kill(test_pid, SIGUSR1))
         fatal("sending a signal [%d] to a process [%d] failed, [%s]",

@@ -1,3 +1,5 @@
+* pass and parse sequence daemon main optons
+
 * ensure that only one instance of the sequence daemon is running on the system
 at a time
 

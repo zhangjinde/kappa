@@ -19,12 +19,13 @@
 #include "error.h"
 #include "trace.h"
 #include "debug.h"
-#include "debug-signal.h"
-#include "string-extension.h"
+#include "stringlib.h"
+#include "signallib.h"
 #include "daemon.h"
 
-static const char *sem_name = "/test-daemon";
-static const char *harness_name = "./test-daemon-harness";
+static const char *mod_name;
+static const char *const sem_name = "/test-daemon";
+static const char *const harness_name = "./test-daemon-harness";
 static const int sig_process_started = SIGUSR1;
 static volatile sig_atomic_t process_started = 0;
 
@@ -42,7 +43,7 @@ static void default_sigaction_handler(
 
 #ifndef NDEBUG
 /* not async-signal-safe */
-    debug_sigaction(sig, siginfo);
+    signal_trace_sigaction(sig, siginfo);
 #endif
 
     errno = oerrno; 
@@ -59,7 +60,10 @@ static int install_default_sigaction_handlers() {
     for (sig = 1; sig < NSIG; sig++)
         if (sig != SIGSTOP && sig != SIGKILL)
             if (sigaction(sig, &sig_action, NULL))
-                return error("installing a handler for [%s] failed", strsignal(sig));
+                return error(
+                    "installing a handler for [%s] failed",
+                    signal_signame(sig)
+                );
 
     return 0;
 }
@@ -74,7 +78,7 @@ static void process_started_handler(
 
 #ifndef NDEBUG
 /* not async-signal-safe */
-    debug_sigaction(sig, siginfo);
+    signal_trace_sigaction(sig, siginfo);
 #endif
 
     if (sig == sig_process_started)
@@ -92,37 +96,47 @@ static int install_process_started_handler() {
     sigemptyset(&sig_action.sa_mask);
 
     if (sigaction(sig, &sig_action, NULL))
-        return error("installing a handler for [%s] failed", strsignal(sig));
+        return error(
+            "installing a handler for [%s] failed",
+            signal_signame(sig)
+        );
 
     return 0;
 }
 
-static int exec_harness() {
-    char pid_str[16] = {0};
-    string_from_int(pid_str, getppid());
-    char *const argv[] = { (char *)harness_name, (char *)sem_name, pid_str };
-    debug("execing [%s], sem name: [%s], test pid: [%s]",
-        argv[0], argv[1], argv[2]);
+static int spawn_harness() {
+    pid_t test_pid, harness_pid;
+    char test_pid_str[16] = {0};
+
+    test_pid = getpid();
+
+    switch ((harness_pid = fork())) {
+    case -1: return error("forking a harness failed");
+    case 0: break;
+    default: return harness_pid;
+    }
+
+    assert(getppid() == test_pid);
+    string_from_int(test_pid_str, test_pid);
+    char *const argv[] = { (char *)harness_name, (char *)sem_name, test_pid_str };
+
+    debug("execing [%s], sem name: [%s], test pid: [%s]", argv[0], argv[1], argv[2]);
+
     if (execve(harness_name, argv, NULL) == -1)
         return error("execing a harness failed");
 
+    /* ought not to get to this point */
     assert(0);
     return 0;
 }
 
 static int test_daemon_no_flags() {
-    const char *mod_name = __func__;
     sigset_t sigset;
     mode_t sem_mode = S_IRUSR | S_IWUSR;
     unsigned sem_init_value = 0;
     unsigned sem_flag = O_CREAT | O_EXCL;
     sem_t *sem = NULL;
     pid_t harness_pid;
-
-    log_init(mod_name);
-
-    if (atexit(terminate))
-        error("a termination handler could not be installed, [%s]", mod_name);
 
     install_default_sigaction_handlers();
 
@@ -139,14 +153,13 @@ static int test_daemon_no_flags() {
     if ((sigprocmask(SIG_SETMASK, &sigset, NULL)))
         return error("setting a process signal mask failed");
 
-    switch ((harness_pid = fork())) {
-    case -1: return error("forking a harness failed");
-    case 0: return exec_harness();
-    default: break;
-    }
+    if ((harness_pid = spawn_harness()) == -1)
+        return error("spawning a harness failed");
 
     sigemptyset(&sigset);
     for ( ; !process_started; ) {
+
+        signal_trace_sigpending();
 
         if (sigsuspend(&sigset) == -1 && errno != EINTR)
             return error("suspending signals failed");
@@ -171,13 +184,21 @@ static int test_daemon_no_flags() {
     if (sem_unlink(sem_name) == -1)
         return error("unlinking a semaphore [%s] failed, [%s]", sem_name, mod_name);
 
-    log_deinit(mod_name);
-
     return 0;
 }
 
-int main(void) {
+int main(int argc, const char **argv) {
+    notused(argc);
+    mod_name = argv[0];
+
+    log_init(mod_name);
+
+    if (atexit(terminate))
+        error("a termination handler could not be installed, [%s]", mod_name);
+
     if (test_daemon_no_flags()) assert(0);
+
+    log_deinit(mod_name);
 
     exit(EXIT_SUCCESS);
 }

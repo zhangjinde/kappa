@@ -17,6 +17,7 @@ objects += debug.o
 objects += stringlib.o
 objects += signallib.o
 objects += hash.o
+objects += file.o
 objects += stream.o
 objects += buffer.o
 objects += daemon.o

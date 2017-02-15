@@ -18,12 +18,17 @@ objects += stringlib.o
 objects += signallib.o
 objects += hash.o
 objects += stream.o
+objects += buffer.o
 objects += daemon.o
+
+export objects
 
 objects: $(objects)
 $(objects): %.o: %.c %.h; $(QUIET_CC)$(CC) $(CFLAGS) -o $@ -c $<
-clean: force;
-	@rm -rf \
-        $(objects)
+test: force $(objects)
+	@$(MAKE) -s -C test;
+clean: force
+	@rm -rf $(objects);
+	@$(MAKE) -s -C test clean;
 force:
 

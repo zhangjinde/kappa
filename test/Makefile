@@ -14,6 +14,7 @@ tests += test-log
 tests += test-fatal
 tests += test-error
 tests += test-hash
+tests += test-file
 tests += test-stream
 tests += test-buffer
 tests += test-stringlib

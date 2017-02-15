@@ -20,6 +20,7 @@ objects += hash.o
 objects += file.o
 objects += stream.o
 objects += buffer.o
+objects += inet-stream.o
 objects += daemon.o
 
 export objects

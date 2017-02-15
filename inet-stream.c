@@ -30,7 +30,10 @@ int inet_stream_accept(int pfd, int *afd) {
 
     *afd = accept(pfd, (struct sockaddr *)(&addr), &addrlen);
     if (*afd < 0 && errno != EINTR)
-        return error("undefined error");
+        return error(
+            "accepting a socket [%d] on the listening socket [%d] failed",
+            *afd, pfd
+        );
 
     return 0;
 }
@@ -45,8 +48,8 @@ int inet_stream_make_address(
     addr->sin_port = htons(port);
 
     switch (inet_pton(AF_INET, host, &addr->sin_addr)) {
-    case 0: return error("the address was not parseable");
-    case -1: return error("undefined error");
+    case 0: return error("the address [%s] was not parseable", host);
+    case -1: return error("parsing an inet address [%s] failed", host);
     default: return 0;
     }
 }

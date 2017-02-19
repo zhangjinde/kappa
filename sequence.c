@@ -18,11 +18,11 @@
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "error.h"
-#include "debug.h"
-#include "stream.h"
-#include "daemon.h"
-#include "sequence.h"
+#include "kappa/error.h"
+#include "kappa/debug.h"
+#include "kappa/stream.h"
+#include "kappa/daemon.h"
+#include "kappa/sequence.h"
 
 struct sequence {
     int pfd;

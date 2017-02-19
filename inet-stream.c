@@ -21,8 +21,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include "error.h"
-#include "inet-stream.h"
+#include "kappa/error.h"
+#include "kappa/inet-stream.h"
 
 int inet_stream_accept(int pfd, int *afd) {
     struct sockaddr_in addr;

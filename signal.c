@@ -7,10 +7,10 @@
 #include <string.h>
 #include <errno.h>
 #include <signal.h>
-#include "error.h"
-#include "trace.h"
-#include "stringlib.h"
-#include "signallib.h"
+#include "kappa/error.h"
+#include "kappa/trace.h"
+#include "kappa/string.h"
+#include "kappa/signal.h"
 
 static const char *const signames[] = {
     [0] = NULL,

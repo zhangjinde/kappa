@@ -10,11 +10,11 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
-#include "log.h"
-#include "fatal.h"
-#include "error.h"
-#include "trace.h"
-#include "debug.h"
+#include "kappa/log.h"
+#include "kappa/fatal.h"
+#include "kappa/error.h"
+#include "kappa/trace.h"
+#include "kappa/debug.h"
 
 static void terminate(void) {
     trace("terminated a process");

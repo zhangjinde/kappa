@@ -4,8 +4,8 @@
 * This file is part of Kappa.
 */
 
-#ifndef STRINGLIB_H
-#define STRINGLIB_H
+#ifndef STRING_H
+#define STRING_H
 
 #include <stdarg.h>
 

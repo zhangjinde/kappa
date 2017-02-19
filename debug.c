@@ -5,8 +5,8 @@
 */
 
 #include <errno.h>
-#include "log.h"
-#include "debug.h"
+#include "kappa/log.h"
+#include "kappa/debug.h"
 
 void debug(const char *fmt, ...) {
     const int err_num = errno;

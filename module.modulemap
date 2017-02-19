@@ -1,0 +1,7 @@
+module kappa {
+    header "log.h"
+    header "trace.h"
+    header "string.h"
+    header "signal.h"
+}
+

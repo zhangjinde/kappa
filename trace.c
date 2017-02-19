@@ -5,8 +5,8 @@
 */
 
 #include <errno.h>
-#include "log.h"
-#include "trace.h"
+#include "kappa/log.h"
+#include "kappa/trace.h"
 
 void trace(const char *fmt, ...) {
     const int err_num = errno;

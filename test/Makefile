@@ -3,8 +3,9 @@
 # This file is part of Kappa.
 
 CC = cc
-CFLAGS += -g -O0
-CFLAGS += -Wall -Wextra -I../
+CFLAGS = -g -O0
+CFLAGS += -Wall -Wextra
+CFLAGS += -iquote../..
 
 QUIET_CC = @echo CC $@;
 
@@ -17,7 +18,7 @@ tests += test-hash
 tests += test-file
 tests += test-stream
 tests += test-buffer
-tests += test-stringlib
+tests += test-string
 tests += test-daemon
 
 harnesses += test-fatal-harness
@@ -25,8 +26,8 @@ harnesses += test-daemon-harness
 
 test: force tests; @(for test in $(tests); do ./test.sh $$test; done)
 tests: $(tests) $(harnesses);
-$(tests): %: %.c; $(CC) $(CFLAGS) $(prefixed_objects) -o $@ $<
-$(harnesses): %: %.c; $(CC) $(CFLAGS) $(prefixed_objects) -o $@ $<
+$(tests): %: %.c; $(QUIET_CC)$(CC) $(CFLAGS) $(prefixed_objects) -o $@ $<
+$(harnesses): %: %.c; $(QUIET_CC)$(CC) $(CFLAGS) $(prefixed_objects) -o $@ $<
 clean: force;
 	@rm -rf \
         $(tests) $(tests:=.o) $(tests:=.dSYM) \

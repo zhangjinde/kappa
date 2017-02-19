@@ -8,7 +8,7 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#include "log.h"
+#include "kappa/log.h"
 
 static int test_log_overflow() {
     const char msg[] = "testing logging a message with overflow";

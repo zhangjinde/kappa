@@ -18,15 +18,52 @@
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "error.h"
-#include "daemon.h"
-#include "stream.h"
-#include "ingress.h"
+#include "kappa/error.h"
+#include "kappa/daemon.h"
+#include "kappa/stream.h"
+#include "kappa/ingress.h"
 
 static int providerfds[0x10000] = { 0 };
+static int providerbf[0x1000000000] = { 0 };
+enum { provider_msg_nb = sizeof(int) * 2 };
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 static int accept_socket(int pfd, int *afd);
+
+static int get_nfds() {
+    int *fd;
+    for (fd = providerfds; *fd; fd++);
+    return (fd - providerfds) ? (*--fd + 1) : 0;
+}
+
+static int accept_provider_input(void) {
+    int e, *fd, *afd, nfds = 0;
+    fd_set readfds;
+    ssize_t nbr;
+    int rbf[0x10000] = { 0 };
+
+    for (;;) {
+        if ((e = pthread_mutex_lock(&mutex))) return -1;
+        while (!(nfds = get_nfds())) pthread_cond_wait(&cond, &mutex);
+
+        FD_ZERO(&readfds);
+        for (afd = providerfds; *afd; afd++) FD_SET(*afd, &readfds);
+
+        if ((e = select(nfds, &readfds, NULL, NULL, NULL)) == -1) return -1;
+
+        for (fd = providerfds; *fd; fd++) {
+            if (FD_ISSET(*fd, &readfds)) {
+                if ((e = stream_read(*fd, rbf, sizeof rbf, &nbr))) return -1;
+                long nmsg = nbr / provider_msg_nb;
+                for (int i = 0; i != nmsg; i++) {
+                    providerbf[i] = rbf[i];
+                }
+            }
+        }
+
+        if ((e = pthread_mutex_unlock(&mutex))) return -1;
+    }
+}
 
 static int accept_provider(int pfd) {
     for (int afd, e; ; afd = e = 0) {
@@ -69,9 +106,9 @@ int start_ingress(
 ) {
     int e, pfd;
     struct sockaddr_in addr;
-    pthread_t accept_providers;
+    pthread_t accept_provider_thread, accept_provider_input_thread;
 
-    if ((e = make_daemon(0, 0))) return -1;
+/*    if ((e = make_daemon(3, 0))) return -1; */
     if ((e = make_address(&addr, host, port))) return -1;
 
     if ((pfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) return -1;
@@ -79,14 +116,25 @@ int start_ingress(
     if ((e = listen(pfd, queue))) return -1;
 
     if ((e = pthread_create(
-            &accept_providers,
+            &accept_provider_thread,
             NULL,
             (void *(*)(void *))accept_provider,
-            (void *)(intptr_t)pfd))
-    )
+            (void *)(intptr_t)pfd
+        )
+    ))
         return -1;
 
-    if ((e = pthread_join(accept_providers, NULL))) return -1;
+    if ((e = pthread_create(
+            &accept_provider_input_thread,
+            NULL,
+            (void *(*)(void *))accept_provider_input,
+            NULL
+        )
+    ))
+        return -1;
+
+    if ((e = pthread_join(accept_provider_input_thread, NULL))) return -1;
+    if ((e = pthread_join(accept_provider_thread, NULL))) return -1;
 
     if ((e = close(pfd))) return -1;
 

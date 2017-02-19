@@ -8,7 +8,7 @@
 #define FATAL_H
 
 #include <stdarg.h>
-#include "noreturn.h"
+#include "kappa/noreturn.h"
 
 noreturn void fatal(const char *fmt, ...);
 

@@ -5,11 +5,11 @@
 */
 
 #include <stdlib.h>
-#include "log.h"
-#include "error.h"
-#include "fatal.h"
-#include "trace.h"
-#include "sequence.h"
+#include "kappa/log.h"
+#include "kappa/error.h"
+#include "kappa/fatal.h"
+#include "kappa/trace.h"
+#include "kappa/sequence.h"
 
 static const char *module = "sequence-daemon";
 

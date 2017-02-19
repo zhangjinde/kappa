@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <assert.h>
-#include "file.h"
+#include "kappa/file.h"
 
 static int test_file_remove() {
     int e;

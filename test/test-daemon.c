@@ -14,14 +14,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <semaphore.h>
-#include "notused.h"
-#include "log.h"
-#include "error.h"
-#include "trace.h"
-#include "debug.h"
-#include "stringlib.h"
-#include "signallib.h"
-#include "daemon.h"
+#include "kappa/notused.h"
+#include "kappa/log.h"
+#include "kappa/error.h"
+#include "kappa/trace.h"
+#include "kappa/debug.h"
+#include "kappa/string.h"
+#include "kappa/signal.h"
+#include "kappa/daemon.h"
 
 static const char *mod_name;
 static const char *const sem_name = "/test-daemon";

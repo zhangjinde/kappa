@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 #include <assert.h>
-#include "hash.h"
+#include "kappa/hash.h"
 
 static int test_hash(int i, int n) {
     assert(hash(i, n) == hash(i, n));

@@ -8,7 +8,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "stream.h"
+#include "kappa/stream.h"
 
 static int test_stream_read() {
     int fd = open("/dev/null", O_RDONLY);

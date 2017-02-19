@@ -15,8 +15,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include "error.h"
-#include "sequence.h"
+#include "kappa/error.h"
+#include "kappa/sequence.h"
 
 /*
 static int test_fetch_sequence(

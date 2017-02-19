@@ -8,8 +8,8 @@
 
 #include <errno.h>
 #include <unistd.h>
-#include "error.h"
-#include "stream.h"
+#include "kappa/error.h"
+#include "kappa/stream.h"
 
 #define errors(e, nb) ((nb == -1) && (e != 0) && (e != EINTR))
 #define done(e, nb) !((e == EINTR) && (nb <0 ))

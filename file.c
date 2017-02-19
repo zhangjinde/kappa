@@ -6,8 +6,8 @@
 
 #include <stdio.h>
 #include <errno.h>
-#include "error.h"
-#include "file.h"
+#include "kappa/error.h"
+#include "kappa/file.h"
 
 static int file_close(FILE *stream) {
     if (stream && fclose(stream))

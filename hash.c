@@ -5,7 +5,7 @@
 */
 
 #include <math.h>
-#include "hash.h"
+#include "kappa/hash.h"
 
 /* 
 * (sqrt(5)-1)/2

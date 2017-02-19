@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/select.h>
-#include "mux.h"
+#include "kappa/mux.h"
 
 #define max(a, b) ((a) > (b) ? (a) : (b))
 

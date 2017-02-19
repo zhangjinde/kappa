@@ -8,8 +8,8 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
-#include "log.h"
-#include "error.h"
+#include "kappa/log.h"
+#include "kappa/error.h"
 
 static int test_error_overflow() {
     int e;

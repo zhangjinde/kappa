@@ -4,8 +4,8 @@
 * This file is part of Kappa.
 */
 
-#ifndef SIGNALLIB_H
-#define SIGNALLIB_H
+#ifndef SIGNAL_H
+#define SIGNAL_H
 
 #include <signal.h>
 

@@ -3,8 +3,9 @@
 # This file is part of Kappa.
 
 CC = cc
-CFLAGS += -g -O0
+CFLAGS = -g -O0
 CFLAGS += -Wall -Wextra
+CFLAGS += -iquote.. -fmodule-map-file=module.modulemap
 
 QUIET_CC = @echo CC $@;
 
@@ -14,8 +15,8 @@ objects += error.o
 objects += warning.o
 objects += trace.o
 objects += debug.o
-objects += stringlib.o
-objects += signallib.o
+objects += string.o
+objects += signal.o
 objects += hash.o
 objects += file.o
 objects += stream.o

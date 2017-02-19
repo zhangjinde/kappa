@@ -16,8 +16,8 @@
 #include <sys/socket.h>
 #include <pthread.h>
 #include <errno.h>
-#include "error.h"
-#include "ingress.h"
+#include "kappa/error.h"
+#include "kappa/ingress.h"
 
 static void *start_ingress_thread(void *arg) {
     const char *host = "127.0.0.1";

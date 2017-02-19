@@ -5,8 +5,8 @@
 */
 
 #include <errno.h>
-#include "log.h"
-#include "warning.h"
+#include "kappa/log.h"
+#include "kappa/warning.h"
 
 void warning(const char *fmt, ...) {
     const int err_num = errno;

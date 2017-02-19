@@ -20,7 +20,9 @@ This file is part of Kappa. */
 Programming. Addison-Wesley, 1998. 2nd ed.
 
 [1] Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein,
-Clifford. Introduction to Algorithms. The MIT Press, 2009. 3rd ed. */
+Clifford. Introduction to Algorithms. The MIT Press, 2009. 3rd ed.
+
+*/
 #define A 0.6180339887498949
 
 #define hashsize 101

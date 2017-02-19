@@ -6,8 +6,8 @@
 
 #include <stdlib.h>
 #include <errno.h>
-#include "log.h"
-#include "fatal.h"
+#include "kappa/log.h"
+#include "kappa/fatal.h"
 
 noreturn void fatal(const char *fmt, ...) {
     va_list varg;

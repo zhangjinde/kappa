@@ -9,7 +9,7 @@
 #include <string.h>
 #include <errno.h>
 #include <syslog.h>
-#include "log.h"
+#include "kappa/log.h"
 
 enum {
     log_opt = LOG_CONS | LOG_NDELAY | LOG_NOWAIT | LOG_PID,

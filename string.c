@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "error.h"
-#include "stringlib.h"
+#include "kappa/error.h"
+#include "kappa/string.h"
 
 void string_reverse(char *s) {
     int c, i, j;
